@@ -5,12 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PhysiksModell"
         mc:Ignorable="d"
-        Title="PhysikSim" Height="514" Width="800" ResizeMode="CanMinimize" Icon="/TaskbarIcon.png" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Cursor="Arrow" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF3E3D3D" FontFamily="MingLiU-ExtB" WindowStyle="ToolWindow">
-    <Grid x:Name="canvasSimulationSpace" Background="Black" Margin="10,44,10,10" Cursor="Cross">
-        <Label x:Name="labelXCoord" Content="|X| :" HorizontalAlignment="Left" Margin="151,-35,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="#FF17D62B" Width="100" Height="29" Cursor="Arrow"/>
-        <Label x:Name="labelYCoord" Content="|Y| :" HorizontalAlignment="Left" Margin="256,-35,0,0" VerticalAlignment="Top" Foreground="#FF0BD020" Height="29" Width="120" Cursor="Arrow"/>
-        <Button x:Name="buttonPlaceBall" Content="Place Ball" Margin="76,-36,634,450" Click="buttonPlaceBall_Click" Width="70" Height="30" Cursor="Arrow"/>
-        <Button x:Name="buttonStartSimulation" Content="Start" Margin="1,-36,709,450" Width="70" Height="30" Cursor="Arrow"/>
-        <Label x:Name="heightTest" Content="X and Y" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Width="236" FontFamily="Arial Black" Height="63" FontSize="48"/>
+        Title="PhysikSim" Height="500" Width="1000" ResizeMode="CanMinimize" Icon="/TaskbarIcon.png" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Cursor="Arrow" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF3E3D3D" FontFamily="MingLiU-ExtB" WindowStyle="ToolWindow">
+    <Grid x:Name="cSimArea" Background="Black" Margin="10,40,10,10" Cursor="Cross" IsManipulationEnabled="True" Height="430" Width="980">
+        <Button x:Name="bPlaceObject" Content="Place" HorizontalAlignment="Left" Margin="1,-29,0,0" VerticalAlignment="Top" Height="24" Width="88" Click="bPlaceObject_Click"/>
+        <Label x:Name="lplacementX" Content="Label" HorizontalAlignment="Left" Margin="103,-29,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="#FF14DE0D"/>
+        <Label x:Name="lplacementY" Content="Label" HorizontalAlignment="Left" Margin="175,-29,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="#FF14DE0D"/>
     </Grid>
 </Window>

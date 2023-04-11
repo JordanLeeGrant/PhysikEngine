@@ -22,56 +22,92 @@ namespace PhysiksModell
     {
         private readonly DispatcherTimer animationInterval = new DispatcherTimer();
         bool placementMode;
+        Canvas cAnimatioLayer;
+
+        // GUI Element Declaration-------------------------------------------
         public View()
         {
             //Default Global Variable Settings//-----------------------------
             placementMode = false;
             //GUI Initialization//-------------------------------------------
+
             InitializeComponent();
             //Grid Settup//--------------------------------------------------
-            
+            cAnimatioLayer = new Canvas();
+            cAnimatioLayer.MaxWidth = 980;
+            cAnimatioLayer.MaxHeight = 430;
+            cAnimatioLayer.Opacity = 100;
+            cAnimatioLayer.Background = Brushes.White;
+
+            cSimArea.Children.Add(cAnimatioLayer);
             //Timer setup for animation Frames//-----------------------------
             animationInterval.Interval = TimeSpan.FromMilliseconds(100);
             animationInterval.Tick += AnimationUpdate;
+           /*Del later*/ animationInterval.Start();
         }
         private void AnimationUpdate(object sender, EventArgs e)
         {
-            if (!placementMode){
-                animationInterval.Stop();
-                return;
-            }
-            int[] pos = CurrentMousePosition();
-            //Labels--------------------------------------------------------- 
-            //Check if on Canvas for X
-            if (pos[0] < 0) { labelXCoord.Content = "|X| : Invalid"; }
-            else if (pos[0] > canvasSimulationSpace.ActualWidth) { labelXCoord.Content = "|X| : Invalid"; }
-            else { labelXCoord.Content = "|X| :" + pos[0]; }
-            //Check if on Canvas for Y
-            if (pos[1] < 0) { labelYCoord.Content = "|Y| : Invalid"; }
-            else if(pos[1] > canvasSimulationSpace.ActualHeight) { labelYCoord.Content = "|Y| : Invalid"; }
-            else { labelYCoord.Content = "|Y| :" + pos[1]; }
+            if (placementMode) { PlaceballUpdate(); }
 
         }
-
-        private void buttonPlaceBall_Click(object sender, RoutedEventArgs e)
+        private void PlaceballUpdate()
         {
-            placementMode = true;
-            animationInterval.Start();
+            cAnimatioLayer.Children.Clear();
+            int[] pos = CurrentMousePosition();
+            //Labels--------------------------------------------------------- 
+            if (withinCanvas(pos[0],pos[1])) { 
+                lplacementX.Content = "|X| :" + pos[0];
+                lplacementY.Content = "|Y| :" + pos[1];}
+            else {
+                lplacementX.Content = "|X| : Invalid";
+                lplacementY.Content = "|Y| : Invalid";}
+
+            //Ellipses-------------------------------------------------------
+            CreateBall(pos[0],pos[1]);
+        }
+        private void bPlaceObject_Click(object sender, RoutedEventArgs e)
+        {
+            //Set flipflop for Update flag
+            switch (placementMode) {
+                case false:
+                    placementMode = true;
+                        break;
+                case true:
+                    placementMode=false;
+                        break;
+            }
         }
         private int[] CurrentMousePosition()
         {
-            int[] mPosition = new int[] { (int)Mouse.GetPosition(canvasSimulationSpace).X, (int)Mouse.GetPosition(canvasSimulationSpace).Y };
+            int[] mPosition = new int[] { (int)Mouse.GetPosition(cSimArea).X, (int)Mouse.GetPosition(cSimArea).Y };
 
             return mPosition;
         }
-        private void CreateBox()
+        private void CreateBox(int xpos,int ypos)
         {
-           // Creates A desired rectangle of desired size at desired Location
-            
         }
-        private void CreateBall()
+        private void CreateBall(int xpos, int ypos)
         {
+            
+            // Creates a circle Of desired size at Desired Location
+            // Creating Object-----------------------------------------------
+            Ellipse nextCircle  = new Ellipse();
+            // Characteristics for the Ellipse-------------------------------
+            nextCircle.Width = 100;
+            nextCircle.Height = 100;
+            nextCircle.Stroke = Brushes.Aquamarine;
+            // Placement / Position------------------------------------------
+            Canvas.SetLeft(nextCircle,xpos - nextCircle.Width / 2);
+            Canvas.SetTop(nextCircle,ypos - nextCircle.Height / 2);
+            // Add to Canvas-------------------------------------------------
+            cAnimatioLayer.Children.Add(nextCircle);
 
+        }
+        private bool withinCanvas(int xCoord,int yCoord)
+        {
+            if (xCoord > cSimArea.Width | xCoord < 0) { return false; }
+            if (yCoord > cSimArea.Width | yCoord < 0) { return false; }
+            return true;
         }
     }
 }
