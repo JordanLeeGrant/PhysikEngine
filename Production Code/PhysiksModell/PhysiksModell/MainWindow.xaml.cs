@@ -28,17 +28,30 @@ namespace PhysiksModell
             placementMode = false;
             //GUI Initialization//-------------------------------------------
             InitializeComponent();
+            //Grid Settup//----------------------------------------------
+            
             //Timer setup for animation Frames//-----------------------------
             animationInterval.Interval = TimeSpan.FromMilliseconds(100);
             animationInterval.Tick += AnimationUpdate;
         }
         private void AnimationUpdate(object sender, EventArgs e)
         {
-            
+
 
         }
 
         private void buttonPlaceBall_Click(object sender, RoutedEventArgs e)
+        {
+            if (placementMode != true) { return; }
+
+
+        }
+        private void CreateBox()
+        {
+           // Creates A desired rectangle of desired size at desired Location
+            
+        }
+        private void CreateBall()
         {
 
         }
