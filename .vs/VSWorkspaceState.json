@@ -2,8 +2,10 @@
   "ExpandedNodes": [
     "",
     "\\Production Code",
-    "\\Test Code"
+    "\\Production Code\\PhysiksModell",
+    "\\Test Code",
+    "\\Test Code\\PhysikEngineTest"
   ],
-  "SelectedNode": "\\Test Code",
+  "SelectedNode": "\\Production Code\\PhysiksModell\\PhysiksModell.sln",
   "PreviewInSolutionExplorer": false
 }
