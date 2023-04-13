@@ -20,42 +20,53 @@ namespace PhysiksModell
     /// </summary>
     public partial class View : Window
     {
+        // Timers-------------------------------------------------------------
         private readonly DispatcherTimer animationInterval = new DispatcherTimer();
-        bool placementMode;
-        Canvas cAnimatioLayer;
+        // Flags--------------------------------------------------------------
+        bool placementMode,placementClick;
+        // Object Tracking Lists ---------------------------------------------
+        List<Ellipse> ballsInPlay;
+        List<Rectangle> squaresInPlay;
+        // GUI Elements ------------------------------------------------------
+        Canvas cPlacementLayer;
 
-        // GUI Element Declaration-------------------------------------------
         public View()
         {
             //Default Global Variable Settings//-----------------------------
             placementMode = false;
+            placementClick = false;
+            ballsInPlay = new List<Ellipse>();
+            squaresInPlay = new List<Rectangle>();
             //GUI Initialization//-------------------------------------------
 
             InitializeComponent();
             //Grid Settup//--------------------------------------------------
-            cAnimatioLayer = new Canvas();
-            cAnimatioLayer.MaxWidth = 980;
-            cAnimatioLayer.MaxHeight = 430;
-            cAnimatioLayer.Opacity = 100;
-            cAnimatioLayer.Background = Brushes.White;
+            cPlacementLayer = new Canvas();
+            
+            cPlacementLayer.Background = Brushes.White;
 
-            cSimArea.Children.Add(cAnimatioLayer);
+            cSimArea.Children.Add(cPlacementLayer);
             //Timer setup for animation Frames//-----------------------------
-            animationInterval.Interval = TimeSpan.FromMilliseconds(100);
+            animationInterval.Interval = TimeSpan.FromMilliseconds(10);
             animationInterval.Tick += AnimationUpdate;
            /*Del later*/ animationInterval.Start();
         }
         private void AnimationUpdate(object sender, EventArgs e)
         {
+            //Flag check-----------------------------------------------------
             if (placementMode) { PlaceballUpdate(); }
 
         }
         private void PlaceballUpdate()
         {
-            cAnimatioLayer.Children.Clear();
+            if (placementClick) 
+            { }
+            cPlacementLayer.Children.Clear();
+            
             int[] pos = CurrentMousePosition();
+            bool oncanvas = WithinCanvas(pos[0], pos[1]);
             //Labels--------------------------------------------------------- 
-            if (withinCanvas(pos[0],pos[1])) { 
+            if (oncanvas) { 
                 lplacementX.Content = "|X| :" + pos[0];
                 lplacementY.Content = "|Y| :" + pos[1];}
             else {
@@ -63,7 +74,11 @@ namespace PhysiksModell
                 lplacementY.Content = "|Y| : Invalid";}
 
             //Ellipses-------------------------------------------------------
-            CreateBall(pos[0],pos[1]);
+            if (oncanvas)
+            {
+                CreateBall(pos[0], pos[1]);
+            }
+
         }
         private void bPlaceObject_Click(object sender, RoutedEventArgs e)
         {
@@ -92,18 +107,34 @@ namespace PhysiksModell
             // Creates a circle Of desired size at Desired Location
             // Creating Object-----------------------------------------------
             Ellipse nextCircle  = new Ellipse();
-            // Characteristics for the Ellipse-------------------------------
-            nextCircle.Width = 100;
-            nextCircle.Height = 100;
+            // Characteristics of the Ellipse-------------------------------
+            nextCircle.Width = 50;
+            nextCircle.Height = 50;
             nextCircle.Stroke = Brushes.Aquamarine;
+            nextCircle.Fill = Brushes.Black;
             // Placement / Position------------------------------------------
             Canvas.SetLeft(nextCircle,xpos - nextCircle.Width / 2);
             Canvas.SetTop(nextCircle,ypos - nextCircle.Height / 2);
             // Add to Canvas-------------------------------------------------
-            cAnimatioLayer.Children.Add(nextCircle);
+            cPlacementLayer.Children.Add(nextCircle);
 
         }
-        private bool withinCanvas(int xCoord,int yCoord)
+
+        private void LeftClick(object sender, MouseButtonEventArgs e)
+        {
+            if (!placementMode) { return; }
+        }
+
+        private void RightClick(object sender, MouseButtonEventArgs e)
+        {
+            if (placementMode)
+            {
+                placementMode = false; 
+                cPlacementLayer.Children.Clear();
+            }
+        }
+
+        private bool WithinCanvas(int xCoord,int yCoord)
         {
             if (xCoord > cSimArea.Width | xCoord < 0) { return false; }
             if (yCoord > cSimArea.Width | yCoord < 0) { return false; }

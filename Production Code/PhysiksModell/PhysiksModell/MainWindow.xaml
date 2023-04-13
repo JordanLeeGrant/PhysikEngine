@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PhysiksModell"
         mc:Ignorable="d"
-        Title="PhysikSim" Height="500" Width="1000" ResizeMode="CanMinimize" Icon="/TaskbarIcon.png" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Cursor="Arrow" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF3E3D3D" FontFamily="MingLiU-ExtB" WindowStyle="ToolWindow">
+        Title="PhysikSim" Height="500" Width="1000" ResizeMode="CanMinimize" Icon="/TaskbarIcon.png" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Cursor="Arrow" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF3E3D3D" FontFamily="MingLiU-ExtB" WindowStyle="ToolWindow" MouseLeftButtonUp="LeftClick" MouseRightButtonUp="RightClick">
     <Grid x:Name="cSimArea" Background="Black" Margin="10,40,10,10" Cursor="Cross" IsManipulationEnabled="True" Height="430" Width="980">
         <Button x:Name="bPlaceObject" Content="Place" HorizontalAlignment="Left" Margin="1,-29,0,0" VerticalAlignment="Top" Height="24" Width="88" Click="bPlaceObject_Click"/>
         <Label x:Name="lplacementX" Content="Label" HorizontalAlignment="Left" Margin="103,-29,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="#FF14DE0D"/>
