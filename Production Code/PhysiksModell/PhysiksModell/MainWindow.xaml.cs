@@ -76,6 +76,8 @@ namespace PhysiksModell
             //Ellipses-------------------------------------------------------
             if (oncanvas)
             {
+                if (!WithinCanvas(pos[0] - 25, pos[1] - 25)) { return; }
+                if (!WithinCanvas(pos[0] + 25, pos[1] + 25)) { return; }
                 CreateBall(pos[0], pos[1]);
             }
 
