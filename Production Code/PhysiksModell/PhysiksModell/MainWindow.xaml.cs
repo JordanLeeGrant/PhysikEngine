@@ -118,13 +118,15 @@ namespace PhysiksModell
             Canvas.SetLeft(nextCircle,xpos - nextCircle.Width / 2);
             Canvas.SetTop(nextCircle,ypos - nextCircle.Height / 2);
             // Add to Canvas-------------------------------------------------
-            cPlacementLayer.Children.Add(nextCircle);
+            if (placementMode) 
+            {cPlacementLayer.Children.Add(nextCircle);}
 
         }
 
         private void LeftClick(object sender, MouseButtonEventArgs e)
         {
             if (!placementMode) { return; }
+            CreateBall(1, 1);
         }
 
         private void RightClick(object sender, MouseButtonEventArgs e)
@@ -139,7 +141,7 @@ namespace PhysiksModell
         private bool WithinCanvas(int xCoord,int yCoord)
         {
             if (xCoord > cSimArea.Width | xCoord < 0) { return false; }
-            if (yCoord > cSimArea.Width | yCoord < 0) { return false; }
+            if (yCoord > cSimArea.Height | yCoord < 0) { return false; }
             return true;
         }
     }
