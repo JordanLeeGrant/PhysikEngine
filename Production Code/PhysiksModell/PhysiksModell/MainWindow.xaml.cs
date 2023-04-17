@@ -23,75 +23,98 @@ namespace PhysiksModell
         // Timers-------------------------------------------------------------
         private readonly DispatcherTimer animationInterval = new DispatcherTimer();
         // Flags--------------------------------------------------------------
-        bool placementMode,placementClick;
+        bool placementMode,placementClick,simActive;
+        List<UpdateBase> updates = new List<UpdateBase>();
         // Object Tracking Lists ---------------------------------------------
         List<Ellipse> ballsInPlay;
         List<Rectangle> squaresInPlay;
         // GUI Elements ------------------------------------------------------
-        Canvas cPlacementLayer;
+        Canvas cPreviewLayer,cPlacementLayer;
 
         public View()
         {
             //Default Global Variable Settings//-----------------------------
             placementMode = false;
             placementClick = false;
+            simActive = false;
             ballsInPlay = new List<Ellipse>();
             squaresInPlay = new List<Rectangle>();
             //GUI Initialization//-------------------------------------------
 
             InitializeComponent();
             //Grid Settup//--------------------------------------------------
+            cPreviewLayer = new Canvas();
             cPlacementLayer = new Canvas();
-            
-            cPlacementLayer.Background = Brushes.White;
 
             cSimArea.Children.Add(cPlacementLayer);
+            cSimArea.Children.Add(cPreviewLayer);
             //Timer setup for animation Frames//-----------------------------
             animationInterval.Interval = TimeSpan.FromMilliseconds(10);
             animationInterval.Tick += AnimationUpdate;
-           /*Del later*/ animationInterval.Start();
+            animationInterval.Start();
+        }
+        public abstract class UpdateBase
+        {
+            public abstract void Update();
+        }
+        public class PlaceballUpdate : UpdateBase
+        {
+            private readonly View view;
+
+            public PlaceballUpdate(View view)
+            {
+                this.view = view;
+            }
+            public override void Update()
+            {
+                view.cPreviewLayer.Children.Clear();
+
+                int[] pos = view.CurrentMousePosition();
+                bool oncanvas = view.WithinCanvas(pos[0], pos[1]);
+                //Labels--------------------------------------------------------- 
+                if (oncanvas)
+                {
+                    view.lplacementX.Content = "|X| :" + pos[0];
+                    view.lplacementY.Content = "|Y| :" + pos[1];
+                }
+                else
+                {
+                    view.lplacementX.Content = "|X| : Invalid";
+                    view.lplacementY.Content = "|Y| : Invalid";
+                }
+
+                //Ellipses-------------------------------------------------------
+                if (oncanvas)
+                {
+                    if (!view.WithinCanvas(pos[0] - 25, pos[1] - 25)) { return; }
+                    if (!view.WithinCanvas(pos[0] + 25, pos[1] + 25)) { return; }
+                    view.CreateBall(pos[0], pos[1]);
+                }
+            }
         }
         private void AnimationUpdate(object sender, EventArgs e)
         {
-            //Flag check-----------------------------------------------------
-            if (placementMode) { PlaceballUpdate(); }
-
-        }
-        private void PlaceballUpdate()
-        {
-            if (placementClick) 
-            { }
-            cPlacementLayer.Children.Clear();
-            
-            int[] pos = CurrentMousePosition();
-            bool oncanvas = WithinCanvas(pos[0], pos[1]);
-            //Labels--------------------------------------------------------- 
-            if (oncanvas) { 
-                lplacementX.Content = "|X| :" + pos[0];
-                lplacementY.Content = "|Y| :" + pos[1];}
-            else {
-                lplacementX.Content = "|X| : Invalid";
-                lplacementY.Content = "|Y| : Invalid";}
-
-            //Ellipses-------------------------------------------------------
-            if (oncanvas)
+            lock (updates)
             {
-                if (!WithinCanvas(pos[0] - 25, pos[1] - 25)) { return; }
-                if (!WithinCanvas(pos[0] + 25, pos[1] + 25)) { return; }
-                CreateBall(pos[0], pos[1]);
+                foreach (var item in updates)
+                {
+                    item.Update();
+                }
+                updates.Clear();
             }
-
         }
+       
         private void bPlaceObject_Click(object sender, RoutedEventArgs e)
         {
             //Set flipflop for Update flag
-            switch (placementMode) {
+            switch (placementMode)
+            {
                 case false:
                     placementMode = true;
-                        break;
+                    break;
                 case true:
-                    placementMode=false;
-                        break;
+                    placementMode = false;
+                    break;
             }
         }
         private int[] CurrentMousePosition()
@@ -119,7 +142,7 @@ namespace PhysiksModell
             Canvas.SetTop(nextCircle,ypos - nextCircle.Height / 2);
             // Add to Canvas-------------------------------------------------
             if (placementMode) 
-            {cPlacementLayer.Children.Add(nextCircle);}
+            {cPreviewLayer.Children.Add(nextCircle);}
 
         }
 
@@ -129,12 +152,34 @@ namespace PhysiksModell
             CreateBall(1, 1);
         }
 
+        private void MouseMoveUpdate(object sender, MouseEventArgs e)
+        {
+            if (!placementMode) { return; }
+            PlaceballUpdate update = new PlaceballUpdate(new View());
+            updates.Add(update);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            switch (simActive)
+            {
+                case false:
+                    simActive = true;
+                    bStartStop.Content = "Stop";
+                    break;
+                case true:
+                    simActive = false;
+                    bStartStop.Content = "Start";
+                    break;
+            }
+        }
+
         private void RightClick(object sender, MouseButtonEventArgs e)
         {
             if (placementMode)
             {
                 placementMode = false; 
-                cPlacementLayer.Children.Clear();
+                cPreviewLayer.Children.Clear();
             }
         }
 
