@@ -13,6 +13,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Numerics;
+using System.Text.RegularExpressions;
+
 namespace PhysiksModell
 {
     /// <summary>
@@ -22,22 +25,22 @@ namespace PhysiksModell
     {
         // Timers-------------------------------------------------------------
         private readonly DispatcherTimer animationInterval = new DispatcherTimer();
+        private readonly DispatcherTimer simulationInterval = new DispatcherTimer();
         // Flags--------------------------------------------------------------
-        bool placementMode,placementClick,simActive;
-        List<UpdateBase> updates = new List<UpdateBase>();
+        bool placementMode, placementClick, simActive;
+        // List<UpdateBase> updates = new List<UpdateBase>();
         // Object Tracking Lists ---------------------------------------------
-        List<Ellipse> ballsInPlay;
+        List<Ball> ballsInPlay;
         List<Rectangle> squaresInPlay;
         // GUI Elements ------------------------------------------------------
-        Canvas cPreviewLayer,cPlacementLayer;
-
+        Canvas cPreviewLayer, cPlacementLayer;
         public View()
         {
             //Default Global Variable Settings//-----------------------------
             placementMode = false;
             placementClick = false;
             simActive = false;
-            ballsInPlay = new List<Ellipse>();
+            ballsInPlay = new List<Ball>();
             squaresInPlay = new List<Rectangle>();
             //GUI Initialization//-------------------------------------------
 
@@ -49,10 +52,15 @@ namespace PhysiksModell
             cSimArea.Children.Add(cPlacementLayer);
             cSimArea.Children.Add(cPreviewLayer);
             //Timer setup for animation Frames//-----------------------------
-            animationInterval.Interval = TimeSpan.FromMilliseconds(10);
+            animationInterval.Interval = TimeSpan.FromMilliseconds(40);
             animationInterval.Tick += AnimationUpdate;
             animationInterval.Start();
+            //Timer setup for Simulation cycles//----------------------------
+            simulationInterval.Interval = TimeSpan.FromMilliseconds(20);
+            simulationInterval.Tick += SimulationUpdate;
+
         }
+        /*
         public abstract class UpdateBase
         {
             public abstract void Update();
@@ -92,18 +100,81 @@ namespace PhysiksModell
                 }
             }
         }
+        */
         private void AnimationUpdate(object sender, EventArgs e)
         {
-            lock (updates)
-            {
-                foreach (var item in updates)
+            /*
+             lock (updates)
+             {
+                 foreach (var item in updates)
+                 {
+                     item.Update();
+                 }
+                 updates.Clear();
+             }
+            */
+            if (placementMode) { PlacePreview(); }
+        }
+        private void SimulationUpdate(object sender, EventArgs e)
+        {
+            if (simActive) {
+                foreach (var item in ballsInPlay)
                 {
-                    item.Update();
+
                 }
-                updates.Clear();
             }
         }
-       
+        private void PlacePreview()
+        {
+            cPreviewLayer.Children.Clear();
+
+            int[] pos = CurrentMousePosition();
+            bool oncanvas = WithinCanvas(pos[0], pos[1]);
+            //Labels--------------------------------------------------------- 
+            if (oncanvas)
+            {
+                lplacementX.Content = "|X| :" + pos[0];
+                lplacementY.Content = "|Y| :" + pos[1];
+            }
+            else
+            {
+                lplacementX.Content = "|X| : Invalid";
+                lplacementY.Content = "|Y| : Invalid";
+            }
+
+            //Ellipses-------------------------------------------------------
+            if (oncanvas)
+            {
+                if (!WithinCanvas(pos[0] - 25, pos[1] - 25)) { return; }
+                if (!WithinCanvas(pos[0] + 25, pos[1] + 25)) { return; }
+                List<int> sizevalues = new List<int>();
+                sizevalues.Add(50);
+                float accinX = (float)Convert.ToDecimal(tbAccellerationX.Text);
+                float accinY = (float)Convert.ToDecimal(tbAccellerationY.Text);
+                Ball previewball = new Ball(new Vector2(pos[0], pos[1]), new Vector2(accinY, accinX), sizevalues,0.01f);
+                cPreviewLayer.Children.Add(CreateBall(previewball));
+            }
+        }
+        private void PlaceInSim()
+        {
+            int[] pos = CurrentMousePosition();
+            bool oncanvas = WithinCanvas(pos[0], pos[1]);
+
+            if (oncanvas)
+            {
+                if (!WithinCanvas(pos[0] - 25, pos[1] - 25)) { return; }
+                if (!WithinCanvas(pos[0] + 25, pos[1] + 25)) { return; }
+                List<int> sizevalues = new List<int>();
+                sizevalues.Add(50);
+                float accinX = (float)Convert.ToDecimal(tbAccellerationX.Text);
+                float accinY = (float)Convert.ToDecimal(tbAccellerationY.Text);
+                Ball previewball = new Ball(new Vector2(pos[0], pos[1]), new Vector2(accinY, accinX), sizevalues,0.01f);
+                cPlacementLayer.Children.Add(CreateBall(previewball));
+                ballsInPlay.Add(previewball);
+            }
+            
+        }
+
         private void bPlaceObject_Click(object sender, RoutedEventArgs e)
         {
             //Set flipflop for Update flag
@@ -123,48 +194,85 @@ namespace PhysiksModell
 
             return mPosition;
         }
-        private void CreateBox(int xpos,int ypos)
+        private void CreateBox(int xpos, int ypos)
         {
         }
-        private void CreateBall(int xpos, int ypos)
+        private Ellipse CreateBall(Ball ellipse)
         {
-            
+
             // Creates a circle Of desired size at Desired Location
             // Creating Object-----------------------------------------------
-            Ellipse nextCircle  = new Ellipse();
+            Ellipse nextCircle = new Ellipse();
             // Characteristics of the Ellipse-------------------------------
             nextCircle.Width = 50;
             nextCircle.Height = 50;
-            nextCircle.Stroke = Brushes.Aquamarine;
-            nextCircle.Fill = Brushes.Black;
+            nextCircle.Stroke = Brushes.White;
+            nextCircle.Fill = Brushes.Blue;
             // Placement / Position------------------------------------------
-            Canvas.SetLeft(nextCircle,xpos - nextCircle.Width / 2);
-            Canvas.SetTop(nextCircle,ypos - nextCircle.Height / 2);
-            // Add to Canvas-------------------------------------------------
-            if (placementMode) 
-            {cPreviewLayer.Children.Add(nextCircle);}
+            Canvas.SetLeft(nextCircle, ellipse.Position.X - nextCircle.Width / 2);
+            Canvas.SetTop(nextCircle, ellipse.Position.Y - nextCircle.Height / 2);
+            return nextCircle;
 
         }
 
         private void LeftClick(object sender, MouseButtonEventArgs e)
         {
             if (!placementMode) { return; }
+            PlaceInSim();
         }
 
         private void MouseMoveUpdate(object sender, MouseEventArgs e)
         {
-            if (!placementMode) { return; }
-            PlaceballUpdate update = new PlaceballUpdate(new View());
-            updates.Add(update);
+            /* if (!placementMode) { return; }
+             PlaceballUpdate update = new PlaceballUpdate(new View());
+             updates.Add(update);*/
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void bReset_Click(object sender, RoutedEventArgs e)
+        {
+            cPlacementLayer.Children.Clear();
+        }
+        
+
+        
+        private void tbAccellerationNumCheck(object sender, TextCompositionEventArgs e)
+        {
+            //Überprüfung mit einer Rgex ob der user eine Zahl eingegeben hat
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+        private void tbAccellerationX_GotFocus(object sender, RoutedEventArgs e)
+        {
+            tbAccellerationX.Text = "";
+        }
+        private void tbAccellerationY_GotFocus(object sender, RoutedEventArgs e)
+        {
+            tbAccellerationY.Text = "";
+        }
+
+        private void tbAccelerationY_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (placementMode)
+            {
+                
+            }
+        }
+
+        private void tbAccelerationX_KeyUp(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        
+
+        private void bStartStop_Click(object sender, RoutedEventArgs e)
         {
             switch (simActive)
             {
                 case false:
                     simActive = true;
                     bStartStop.Content = "Stop";
+                    
                     break;
                 case true:
                     simActive = false;
@@ -188,5 +296,6 @@ namespace PhysiksModell
             if (yCoord > cSimArea.Width | yCoord < 0) { return false; }
             return true;
         }
+
     }
 }

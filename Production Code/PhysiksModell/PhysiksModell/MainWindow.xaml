@@ -7,9 +7,13 @@
         mc:Ignorable="d"
         Title="PhysikSim" Height="600" Width="1100" ResizeMode="CanMinimize" Icon="/TaskbarIcon.png" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen" Cursor="Arrow" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Background="#FF3E3D3D" FontFamily="MingLiU-ExtB" WindowStyle="ToolWindow" MouseLeftButtonUp="LeftClick" MouseRightButtonUp="RightClick" MouseMove="MouseMoveUpdate">
     <Grid x:Name="cSimArea" Background="Black" Margin="10,40,10,10" Cursor="Cross" IsManipulationEnabled="True" Height="500" Width="1000">
-        <Button x:Name="bPlaceObject" Content="Place" HorizontalAlignment="Left" Margin="100,-33,0,0" VerticalAlignment="Top" Height="24" Width="88" Click="bPlaceObject_Click"/>
-        <Label x:Name="lplacementX" Content="|X|" HorizontalAlignment="Left" Margin="894,-33,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="#FF14DE0D"/>
-        <Label x:Name="lplacementY" Content="|Y|" HorizontalAlignment="Left" Margin="960,-33,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="#FF14DE0D"/>
-        <Button x:Name="bStartStop" Content="Start" HorizontalAlignment="Left" Margin="7,-33,0,0" VerticalAlignment="Top" Height="25" Width="88" Click="Button_Click"/>
+        <Button x:Name="bPlaceObject" Content="Place" HorizontalAlignment="Left" Margin="93,-34,0,0" VerticalAlignment="Top" Height="25" Width="88" Click="bPlaceObject_Click"/>
+        <Label x:Name="lplacementX" Content="|X|" HorizontalAlignment="Left" Margin="802,-33,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="#FF14DE0D"/>
+        <Label x:Name="lplacementY" Content="|Y|" HorizontalAlignment="Left" Margin="902,-33,0,0" VerticalAlignment="Top" Background="Transparent" Foreground="#FF14DE0D"/>
+        <Button x:Name="bStartStop" Content="Start" HorizontalAlignment="Left" Margin="0,-34,0,0" VerticalAlignment="Top" Height="25" Width="88" Click="bStartStop_Click"/>
+        <Button x:Name="bReset" Content="Reset" HorizontalAlignment="Left" Margin="186,-34,0,0" VerticalAlignment="Top" Height="25" Width="88" Click="bReset_Click"/>
+        <TextBox x:Name="tbAccellerationX" HorizontalAlignment="Left" Margin="313,-29,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="25" SelectionOpacity="0.3" UndoLimit="3" PreviewTextInput="tbAccellerationNumCheck" GotFocus="tbAccellerationX_GotFocus" KeyUp="tbAccelerationX_KeyUp"/>
+        <Label Content="Geschwindigkeit" HorizontalAlignment="Left" Margin="309,-48,0,0" VerticalAlignment="Top" Foreground="#FF4DDA1B" Height="23" Width="120" FontSize="10"/>
+        <TextBox x:Name="tbAccellerationY" HorizontalAlignment="Left" Margin="356,-29,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="26" SelectionOpacity="0.3" UndoLimit="3" PreviewTextInput="tbAccellerationNumCheck" GotFocus="tbAccellerationY_GotFocus" KeyUp="tbAccelerationY_KeyUp"/>
     </Grid>
 </Window>
