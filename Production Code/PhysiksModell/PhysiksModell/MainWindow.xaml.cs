@@ -52,7 +52,7 @@ namespace PhysiksModell
             cSimArea.Children.Add(cPlacementLayer);
             cSimArea.Children.Add(cPreviewLayer);
             //Timer setup for animation Frames//-----------------------------
-            animationInterval.Interval = TimeSpan.FromMilliseconds(40);
+            animationInterval.Interval = TimeSpan.FromMilliseconds(10);
             animationInterval.Tick += AnimationUpdate;
             animationInterval.Start();
             //Timer setup for Simulation cycles//----------------------------
@@ -114,13 +114,14 @@ namespace PhysiksModell
              }
             */
             if (placementMode) { PlacePreview(); }
+            if (simActive) { PlaceSimObj(); }
         }
         private void SimulationUpdate(object sender, EventArgs e)
         {
             if (simActive) {
                 foreach (var item in ballsInPlay)
                 {
-
+                    item.BallUpdate();
                 }
             }
         }
@@ -168,13 +169,26 @@ namespace PhysiksModell
                 sizevalues.Add(50);
                 float accinX = (float)Convert.ToDecimal(tbAccellerationX.Text);
                 float accinY = (float)Convert.ToDecimal(tbAccellerationY.Text);
-                Ball previewball = new Ball(new Vector2(pos[0], pos[1]), new Vector2(accinY, accinX), sizevalues,0.01f);
+                Ball previewball = 
+                    new Ball(
+                        new Vector2(pos[0], pos[1]), 
+                        new Vector2(accinX, accinY), 
+                        sizevalues,0.02f);
                 cPlacementLayer.Children.Add(CreateBall(previewball));
                 ballsInPlay.Add(previewball);
             }
             
         }
-
+        private void PlaceSimObj()
+        {
+            cPlacementLayer.Children.Clear();
+            //Rectangles
+            //Ellipses
+            foreach (var item in ballsInPlay)
+            {
+                cPlacementLayer.Children.Add(CreateBall(item));
+            }
+        }
         private void bPlaceObject_Click(object sender, RoutedEventArgs e)
         {
             //Set flipflop for Update flag
@@ -204,37 +218,39 @@ namespace PhysiksModell
             // Creating Object-----------------------------------------------
             Ellipse nextCircle = new Ellipse();
             // Characteristics of the Ellipse-------------------------------
-            nextCircle.Width = 50;
-            nextCircle.Height = 50;
+            nextCircle.Width = ellipse.Size[0];
+            nextCircle.Height = ellipse.Size[0];
             nextCircle.Stroke = Brushes.White;
             nextCircle.Fill = Brushes.Blue;
             // Placement / Position------------------------------------------
-            Canvas.SetLeft(nextCircle, ellipse.Position.X - nextCircle.Width / 2);
-            Canvas.SetTop(nextCircle, ellipse.Position.Y - nextCircle.Height / 2);
+            if (WithinCanvas((int)ellipse.Position.X, (int)ellipse.Position.Y))
+            {
+                Canvas.SetLeft(nextCircle, ellipse.Position.X - nextCircle.Width / 2);
+                Canvas.SetTop(nextCircle, ellipse.Position.Y - nextCircle.Height / 2);
+            }
+            else 
+            {
+                ellipse.SetPosition((int)cSimArea.Width / 2, (int)cSimArea.Height / 2);
+            }
+          
             return nextCircle;
 
         }
-
         private void LeftClick(object sender, MouseButtonEventArgs e)
         {
             if (!placementMode) { return; }
             PlaceInSim();
         }
-
         private void MouseMoveUpdate(object sender, MouseEventArgs e)
         {
             /* if (!placementMode) { return; }
              PlaceballUpdate update = new PlaceballUpdate(new View());
              updates.Add(update);*/
         }
-
         private void bReset_Click(object sender, RoutedEventArgs e)
         {
             cPlacementLayer.Children.Clear();
         }
-        
-
-        
         private void tbAccellerationNumCheck(object sender, TextCompositionEventArgs e)
         {
             //Überprüfung mit einer Rgex ob der user eine Zahl eingegeben hat
@@ -249,7 +265,6 @@ namespace PhysiksModell
         {
             tbAccellerationY.Text = "";
         }
-
         private void tbAccelerationY_KeyUp(object sender, KeyEventArgs e)
         {
             if (placementMode)
@@ -257,14 +272,10 @@ namespace PhysiksModell
                 
             }
         }
-
         private void tbAccelerationX_KeyUp(object sender, KeyEventArgs e)
         {
 
         }
-
-        
-
         private void bStartStop_Click(object sender, RoutedEventArgs e)
         {
             switch (simActive)
@@ -272,15 +283,15 @@ namespace PhysiksModell
                 case false:
                     simActive = true;
                     bStartStop.Content = "Stop";
-                    
+                    simulationInterval.Start();
                     break;
                 case true:
                     simActive = false;
                     bStartStop.Content = "Start";
+                    simulationInterval.Stop();
                     break;
             }
         }
-
         private void RightClick(object sender, MouseButtonEventArgs e)
         {
             if (placementMode)
@@ -289,7 +300,6 @@ namespace PhysiksModell
                 cPreviewLayer.Children.Clear();
             }
         }
-
         private bool WithinCanvas(int xCoord,int yCoord)
         {
             if (xCoord > cSimArea.Width | xCoord < 0) { return false; }

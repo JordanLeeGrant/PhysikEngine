@@ -30,53 +30,47 @@ namespace PhysiksModell
     internal abstract class DynamicObject : Object
     {
        
-        private Vector2 _velocity;
+        private Vector2 _velocity,_acceleration;
         private List<Vector2> _influences;
+        private float _deltat;
         // Velocity ------------------------------------------------------------------
         //Calculate actual V
-        private Vector2 NextVelocity()
+        public Vector2 NextVelocity()
         {
-            Vector2 truevelocity = new Vector2();
+            Vector2 influence = new Vector2();
             foreach (var item in Influences)
             {
-                truevelocity += item;
+                influence += item;
             }
-
+            Vector2 truevelocity = Velocity + influence;
             return truevelocity;
         }
         // Calculate V
-        public void AddInfluenceVector (Vector2 a, float t)
+        public void AddInfluenceVector (Vector2 a)
         {
             
             // Berechnung der Geschwindigkeit des sich bewegenden Objektes
 
             Vector2 newV = new Vector2();
            
-            newV = Velocity + a * t;
+            newV = Velocity + a * Deltat;
 
             Influences.Add(newV);
         }
-        //Set V0
-        private void UpdateVelocity()
-        {
-            Velocity = NextVelocity();
-        }
+        
         //Distance--------------------------------------------------------------------
         //Calculate S
-        private Vector2 NextDistance(Vector2 a,float t)
+        public Vector2 NextDistance(Vector2 a,float t)
         {
             Vector2 S = new Vector2();
             S = Position + Velocity * t + 0.5f * a* (float)Math.Pow(t,2);
             return S;
         }
-        //Set S0
-        private void UpdatePosition()
-        {
-            
-        }
         //GetSet----------------------------------------------------------------------
         public Vector2 Velocity { get => _velocity; set => _velocity = value; }
         public List<Vector2> Influences { get => _influences; set => _influences = value; }
+        public Vector2 Acceleration { get => _acceleration; set => _acceleration = value; }
+        public float Deltat { get => _deltat; set => _deltat = value; }
     }
     internal class Ball : DynamicObject
     {
@@ -85,13 +79,20 @@ namespace PhysiksModell
             Velocity = startvelocity;
             Position = startposition;
             Size = size;
+            Deltat = t;
             Influences = new List<Vector2>();
-            AddInfluenceVector(new Vector2(0,9.85f),1);
+            //Erdanziehung in mm/S
+            AddInfluenceVector(new Vector2(0,9810f));
         }
         
         public void BallUpdate()
         {
-            
+            Vector2 v = NextVelocity();
+            Vector2 s = NextDistance(Acceleration, 0.02f);
+
+            Velocity = v;
+            SetPosition((int)s.X,(int)s.Y);
+
         }
 
     }
