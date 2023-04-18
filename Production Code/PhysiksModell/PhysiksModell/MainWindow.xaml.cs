@@ -33,6 +33,7 @@ namespace PhysiksModell
         List<Ball> ballsInPlay;
         List<Rectangle> squaresInPlay;
         // GUI Elements ------------------------------------------------------
+        float tbAccellerationValueX, tbAccellerationValueY;
         Canvas cPreviewLayer, cPlacementLayer;
         public View()
         {
@@ -150,9 +151,8 @@ namespace PhysiksModell
                 if (!WithinCanvas(pos[0] + 25, pos[1] + 25)) { return; }
                 List<int> sizevalues = new List<int>();
                 sizevalues.Add(50);
-                float accinX = (float)Convert.ToDecimal(tbAccellerationX.Text);
-                float accinY = (float)Convert.ToDecimal(tbAccellerationY.Text);
-                Ball previewball = new Ball(new Vector2(pos[0], pos[1]), new Vector2(accinY, accinX), sizevalues,0.01f);
+                
+                Ball previewball = new Ball(new Vector2(pos[0], pos[1]), new Vector2(tbAccellerationValueX, tbAccellerationValueY), sizevalues,0.01f);
                 cPreviewLayer.Children.Add(CreateBall(previewball));
             }
         }
@@ -167,12 +167,10 @@ namespace PhysiksModell
                 if (!WithinCanvas(pos[0] + 25, pos[1] + 25)) { return; }
                 List<int> sizevalues = new List<int>();
                 sizevalues.Add(50);
-                float accinX = (float)Convert.ToDecimal(tbAccellerationX.Text);
-                float accinY = (float)Convert.ToDecimal(tbAccellerationY.Text);
                 Ball previewball = 
                     new Ball(
                         new Vector2(pos[0], pos[1]), 
-                        new Vector2(accinX, accinY), 
+                        new Vector2(tbAccellerationValueX, tbAccellerationValueY), 
                         sizevalues,0.02f);
                 cPlacementLayer.Children.Add(CreateBall(previewball));
                 ballsInPlay.Add(previewball);
@@ -259,22 +257,22 @@ namespace PhysiksModell
         }
         private void tbAccellerationX_GotFocus(object sender, RoutedEventArgs e)
         {
-            tbAccellerationX.Text = "";
+            tbAccellerationX.Text = "0";
         }
         private void tbAccellerationY_GotFocus(object sender, RoutedEventArgs e)
         {
-            tbAccellerationY.Text = "";
+            tbAccellerationY.Text = "0";
         }
         private void tbAccelerationY_KeyUp(object sender, KeyEventArgs e)
         {
-            if (placementMode)
-            {
-                
+            try { 
+            tbAccellerationValueY = -(float)Convert.ToDecimal(tbAccellerationY.Text);
             }
+
         }
         private void tbAccelerationX_KeyUp(object sender, KeyEventArgs e)
         {
-
+            tbAccellerationValueX = (float)Convert.ToDecimal(tbAccellerationX.Text);
         }
         private void bStartStop_Click(object sender, RoutedEventArgs e)
         {
