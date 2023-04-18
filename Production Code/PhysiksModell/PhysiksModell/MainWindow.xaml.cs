@@ -119,10 +119,20 @@ namespace PhysiksModell
         }
         private void SimulationUpdate(object sender, EventArgs e)
         {
+            
             if (simActive) {
+                
                 foreach (var item in ballsInPlay)
                 {
-                    item.BallUpdate();
+                    if (!WithinCanvas((int)item.Position.X, (int)item.Position.Y))
+                    {
+                       item.destroy = true;
+                    }
+                    else
+                    {
+                        item.BallUpdate();
+                    }
+
                 }
             }
         }

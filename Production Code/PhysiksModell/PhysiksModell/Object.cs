@@ -74,7 +74,7 @@ namespace PhysiksModell
     }
     internal class Ball : DynamicObject
     {
-
+        public bool destroy;
         public Ball(Vector2 startposition, Vector2 startvelocity, List<int> size,float t) {
             
             Position = startposition;
@@ -84,6 +84,7 @@ namespace PhysiksModell
             //Erdanziehung in mm/S
             AddInfluenceVector(new Vector2(0,9810f));
             AddInfluenceVector(startvelocity);
+            destroy = false;
         }
         public Ball(Vector2 startposition,List<int> size)
         {
