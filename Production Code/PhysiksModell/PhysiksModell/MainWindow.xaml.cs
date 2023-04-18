@@ -114,7 +114,7 @@ namespace PhysiksModell
                  updates.Clear();
              }
             */
-            if (placementMode) { PlacePreview(); }
+            if (placementMode) {PlacePreview();}
             if (simActive) { PlaceSimObj(); }
         }
         private void SimulationUpdate(object sender, EventArgs e)
@@ -151,8 +151,8 @@ namespace PhysiksModell
                 if (!WithinCanvas(pos[0] + 25, pos[1] + 25)) { return; }
                 List<int> sizevalues = new List<int>();
                 sizevalues.Add(50);
-                
-                Ball previewball = new Ball(new Vector2(pos[0], pos[1]), new Vector2(tbAccellerationValueX, tbAccellerationValueY), sizevalues,0.01f);
+
+                Ball previewball = new Ball(new Vector2(pos[0], pos[1]),sizevalues);
                 cPreviewLayer.Children.Add(CreateBall(previewball));
             }
         }
@@ -226,10 +226,6 @@ namespace PhysiksModell
                 Canvas.SetLeft(nextCircle, ellipse.Position.X - nextCircle.Width / 2);
                 Canvas.SetTop(nextCircle, ellipse.Position.Y - nextCircle.Height / 2);
             }
-            else 
-            {
-                ellipse.SetPosition((int)cSimArea.Width / 2, (int)cSimArea.Height / 2);
-            }
           
             return nextCircle;
 
@@ -268,11 +264,22 @@ namespace PhysiksModell
             try { 
             tbAccellerationValueY = -(float)Convert.ToDecimal(tbAccellerationY.Text);
             }
+            catch (Exception ex)
+            {
+
+            }
 
         }
         private void tbAccelerationX_KeyUp(object sender, KeyEventArgs e)
         {
-            tbAccellerationValueX = (float)Convert.ToDecimal(tbAccellerationX.Text);
+            try
+            {
+                tbAccellerationValueX = (float)Convert.ToDecimal(tbAccellerationX.Text);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
         private void bStartStop_Click(object sender, RoutedEventArgs e)
         {

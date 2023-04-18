@@ -76,15 +76,20 @@ namespace PhysiksModell
     {
 
         public Ball(Vector2 startposition, Vector2 startvelocity, List<int> size,float t) {
-            Velocity = startvelocity;
+            
             Position = startposition;
             Size = size;
             Deltat = t;
             Influences = new List<Vector2>();
             //Erdanziehung in mm/S
             AddInfluenceVector(new Vector2(0,9810f));
+            AddInfluenceVector(startvelocity);
         }
-        
+        public Ball(Vector2 startposition,List<int> size)
+        {
+            Position = startposition;
+            Size = size;
+        }
         public void BallUpdate()
         {
             Vector2 v = NextVelocity();
