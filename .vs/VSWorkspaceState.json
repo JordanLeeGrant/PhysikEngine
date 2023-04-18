@@ -1,8 +1,11 @@
 {
   "ExpandedNodes": [
     "",
+    "\\Assets",
+    "\\Assets\\Code Screenshots",
     "\\Production Code",
     "\\Production Code\\PhysiksModell",
+    "\\Production Code\\PhysiksModell\\PhysiksModell",
     "\\Test Code",
     "\\Test Code\\PhysikEngineTest"
   ],
